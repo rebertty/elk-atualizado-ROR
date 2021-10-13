@@ -1,0 +1,70 @@
+readonlyrest:
+    audit_collector: true
+    audit_index_template: "'auditoria'-yyy-MM"
+    access_control_rules:
+
+    - name: "::LOGSTASH::"
+      auth_key: logstash:logstash
+      verbosity: error
+
+    - name: "::APM::"
+      auth_key: apmserver:apmserver
+      verbosity: error
+
+    - name: "::KIBANA-SRV::"
+      auth_key: kibana:kibana
+      kibana_access: unrestricted
+      verbosity: error
+
+
+    - name: "::user-teste::"
+      auth_key: rebertty:rebertty
+      kibana_access: ro
+      indices: [ ".kibana", "logstash-igesp*", "apm-7.14.0-igesp*", "observability*"]
+      kibana_hide_apps: [ "Security", "Enterprise Search"]
+
+    - name: "::FILEBEAT::"
+      auth_key: filebeat:filebeat
+      verbosity: error
+
+    - name: "::ADMIN::"
+      auth_key: elastic:teste
+      kibana_access: unrestricted
+      verbosity: error
+
+    - name: "ldapA"
+      type: allow
+      ldap_auth:
+        name: "ldap1"
+        groups: ["GG_ApoioTecnologico"]
+      kibana_access: unrestricted
+
+    - name: "ldapU"
+      type: allow
+      ldap_auth:
+        name: "ldap1"
+        groups: ["GG_ELK_IGESP"]
+      kibana_access: ro
+      indices: [ ".kibana", "logstash-igesp*", "apm-7.14.0-igesp*", "observability*"]
+      kibana_hide_apps: [ "Security", "Enterprise Search"]
+
+    ldaps:
+
+    - name: ldap1
+      host: "10.1.192.2"
+      port: 389
+      ssl_enabled: false
+      ssl_trust_all_certs: true 
+      ignore_ldap_connectivity_problems: false 
+      bind_dn: "CN=account_schedule,OU=Services Users,OU=Suporte,DC=sefaz,DC=se,DC=gov,DC=br"
+      bind_password: "SchedulE"
+      search_user_base_DN: "ou=Desenvolvimento,dc=sefaz,dc=se,dc=gov,dc=br"
+      search_groups_base_DN: "OU=Desenvolvimento,DC=sefaz,DC=se,DC=gov,DC=br"
+      group_search_filter: "(objectClass=group)"
+      unique_member_attribute: "member"
+      user_id_attribute: "sAMAccountName"
+
+      connection_pool_size: 30                                # optional, default 30
+      connection_timeout_in_sec: 10                             # optional, default 1
+      request_timeout_in_sec: 10                                # optional, default 1
+      cache_ttl_in_sec: 10
