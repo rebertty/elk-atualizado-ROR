@@ -4,33 +4,34 @@ readonlyrest:
     access_control_rules:
 
     - name: "::LOGSTASH::"
-      auth_key: logstash:logstash
+      auth_key: logstash:3ArwvkriDwUrOEm
       verbosity: error
 
     - name: "::APM::"
-      auth_key: apmserver:apmserver
+      auth_key: apmserver:3zizO7ykFlL4Fsj
       verbosity: error
 
     - name: "::KIBANA-SRV::"
-      auth_key: kibana:kibana
-      kibana_access: unrestricted
-      verbosity: error
-
-
-    - name: "::user-teste::"
-      auth_key: rebertty:rebertty
-      kibana_access: ro
-      indices: [ ".kibana", "logstash-igesp*", "apm-7.14.0-igesp*", "observability*"]
-      kibana_hide_apps: [ "Security", "Enterprise Search"]
-
-    - name: "::FILEBEAT::"
-      auth_key: filebeat:filebeat
-      verbosity: error
+      auth_key: kibana:4eBBYeN37C9sgFD
 
     - name: "::ADMIN::"
-      auth_key: elastic:teste
+      auth_key: elastic:3s6uCgWbGD
       kibana_access: unrestricted
       verbosity: error
+
+    - name: "::FILEBEAT::"
+      auth_key: filebeat:6ZhFaMkQ5W3xTlz
+      verbosity: error
+
+    - name: "::IGESP-TESTE::"
+      auth_key: igesp:2jOe95zv2m
+      kibana_access: ro
+      indices: [ ".kibana", "logstash-igesp*", "apm-7.14.0-igesp*", "observability*"]
+
+    - name: "::FAZENDARIO::"
+      auth_key: fazendario:93tulgD32h
+      kibana_access: ro
+      verbosity: info
 
     - name: "ldapA"
       type: allow
@@ -39,15 +40,16 @@ readonlyrest:
         groups: ["GG_ApoioTecnologico"]
       kibana_access: unrestricted
 
-    - name: "ldapU"
+    - name: "::LDAP_IGESP::"
       type: allow
       ldap_auth:
         name: "ldap1"
         groups: ["GG_ELK_IGESP"]
       kibana_access: ro
       indices: [ ".kibana", "logstash-igesp*", "apm-7.14.0-igesp*", "observability*"]
-      kibana_hide_apps: [ "Security", "Enterprise Search"]
 
+
+#Configuração de autenticação LDAP, retornando os grupos em que o usuário pertence.
     ldaps:
 
     - name: ldap1
