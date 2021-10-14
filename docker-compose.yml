@@ -22,9 +22,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-      # Use single node discovery in order to disable production mode and avoid bootstrap checks.
-      # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
       discovery.type: single-node
     networks:
       - elk
@@ -74,20 +72,19 @@ services:
     build:
       context: apm-server/
       args:
-        ELK_VERSION: $ELK_VERSION
-    command:
-      - --strict.perms=false
+        ELK_VERSION: ${ELK_VERSION}
     volumes:
       - type: bind
         source: ./apm-server/config/apm-server.yml
         target: /usr/share/apm-server/apm-server.yml
         read_only: true
     ports:
-      - '8200:8200'
+      - "8200:8200"
     networks:
       - elk
     depends_on:
-      - elasticsearch
+      - elasticsearch  
+
 
 networks:
   elk:

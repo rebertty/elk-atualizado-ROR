@@ -79,8 +79,7 @@ apm-server:
   # If specified, APM Server will record this value in events which have no service environment
   # defined, and add it to agent configuration queries to Kibana when none is specified in the
   # request from the agent.
-  default_service_environment: apmSemEnv
-
+  #default_service_environment:
 
   # Enable APM Server Golang expvar support (https://golang.org/pkg/expvar/).
   #expvar:
@@ -266,7 +265,7 @@ apm-server:
     #
     # WARNING: This configuration is deprecated and replaced with `apm-server.auth.anonymous.allow_service`,
     # and will be removed in the 8.0 release. If that config is defined, this one will be ignored.
-    allow_service_names: []
+    #allow_service_names: []
 
     # A list of permitted origins for real user monitoring.
     # User-agents will send an origin header that will be validated against this list.
@@ -277,10 +276,10 @@ apm-server:
 
     # A list of Access-Control-Allow-Headers to allow RUM requests, in addition to "Content-Type",
     # "Content-Encoding", and "Accept"
-    allow_headers: []
+    allow_headers: ["header1","header2"]
 
     # Custom HTTP headers to add to RUM responses, e.g. for security policy compliance.
-    response_headers:
+    #response_headers:
     #  X-My-Header: Contents of the header
 
     # Regexp to be matched against a stacktrace frame's `file_name` and `abs_path` attributes.
@@ -308,20 +307,20 @@ apm-server:
       # This setting only affects sourcemap reads - the output determines where sourcemaps are written.
       # Note: Configuring elasticsearch is not supported if apm-server is being
       # managed by Fleet.
-      #elasticsearch:
+      elasticsearch:
         # Array of hosts to connect to.
         # Scheme and port can be left out and will be set to the default (`http` and `9200`).
         # In case you specify and additional path, the scheme is required: `http://localhost:9200/path`.
         # IPv6 addresses should always be defined as: `https://[2001:db8::1]:9200`.
-        # hosts: ["localhost:9200"]
+        hosts: ["localhost:9200"]
 
         # Protocol - either `http` (default) or `https`.
         #protocol: "https"
 
         # Authentication credentials - either API key or username/password.
         #api_key: "id:api_key"
-        #username: "elastic"
-        #password: "changeme"
+        username: "apmserver"
+        password: "3zizO7ykFlL4Fsj"
 
       # The `cache.expiration` determines how long a source map should be cached before fetching it again from Elasticsearch.
       # Note that values configured without a time unit will be interpreted as seconds.
@@ -341,7 +340,7 @@ apm-server:
 
   kibana:
     # For APM Agent configuration in Kibana, enabled must be true.
-    enabled: false
+    enabled: true
 
     # Scheme and port can be left out and will be set to the default (`http` and `5601`).
     # In case you specify an additional path, the scheme is required: `http://localhost:5601/path`.
@@ -350,8 +349,8 @@ apm-server:
 
     # Optional protocol and basic auth credentials.
     #protocol: "https"
-    #username: "elastic"
-    #password: "changeme"
+    #username: ""
+    #password: ""
 
     # Optional HTTP path.
     #path: ""
@@ -469,6 +468,12 @@ apm-server:
                     #max_age: "30d"
                   #set_priority:
                     #priority: 100
+              #warm:
+                #min_age: "30d"
+                #actions:
+                  #set_priority:
+                    #priority: 50
+                  #readonly: {}
 
 
 
@@ -489,7 +494,7 @@ apm-server:
 
       # Defines the gRPC host and port the server is listening on.
       # Defaults to the standard Jaeger gRPC collector port 14250.
-      #host: "localhost:14250"
+      #host: "0.0.0.0:14250"
 
       # Set to the name of a process tag to use for authorizing
       # Jaeger agents.
@@ -508,7 +513,7 @@ apm-server:
 
       # Defines the HTTP host and port the server is listening on.
       # Defaults to the standard Jaeger HTTP collector port 14268.
-      #host: "localhost:14268"
+      #host: "0.0.0.0:14268"
 
 #================================= General =================================
 
@@ -516,11 +521,11 @@ apm-server:
 # The memory queue will present all available events (up to the outputs
 # bulk_max_size) to the output, the moment the output is ready to serve
 # another batch of events.
-#queue:
+queue:
   # Queue type by name (default 'mem').
-  #mem:
+  mem:
     # Max number of events the queue can buffer.
-    #events: 4096
+    events: 10000
 
     # Hints the minimum number of events stored in the queue,
     # before providing a batch of events to the outputs.
@@ -546,14 +551,14 @@ apm-server:
 # Set to false to disable template loading.
 setup.template.enabled: true
 
-# Template name. By default the template name is "apm-%{[observer.version]}"
+# Template name. By default the template name is "apm-%{[]}"
 # The template name and pattern has to be set in case the elasticsearch index pattern is modified.
-setup.template.name: "apm-%{[service.name]}"
+setup.template.name: "apm"
 
 # Template pattern. By default the template pattern is "apm-%{[observer.version]}-*" to apply to the default index settings.
 # The first part is the version of apm-server and then -* is used to match all daily indices.
 # The template name and pattern has to be set in case the elasticsearch index pattern is modified.
-setup.template.pattern: "apm-%{[service.name]}-*"
+setup.template.pattern: "apm-*"
 
 # Path to fields.yml file to generate the template.
 #setup.template.fields: "${path.config}/fields.yml"
@@ -636,31 +641,48 @@ output.elasticsearch:
   # as they need to be aligned:
   # * `setup.template.name`
   # * `setup.template.pattern`
-  index: "apm-%{[service.name]}"
+  # index: "apm-%{[observer.version]}-%{+yyyy.MM.dd}"
+  # index: "apm-%{[service.name]}"
   indices:
     - index: "apm-%{[service.name]}-igesp-production"
       when.contains:
-        service.environment: "production"
-  
+        service.name: "jboss-prod"
+
     - index: "apm-%{[service.name]}-igesp-treinamento"
       when.contains:
         service.environment: "treinamento"
  
     - index: "apm-%{[service.name]}-igesp-desenvolvimento"
       when.contains:
-        service.environment: "desenvolvimento"
+        service.name: "jboss-des-01"
 
     - index: "apm-%{[service.name]}-igesp-hml"
       when.contains:
-        service.environment: "hml"
+        service.name: "jboss-hml-01"
 
     - index: "apm-%{[service.name]}-igesp-pre-producao"
       when.contains:
         service.environment: "pre-producao"
         
-    - index: "apm-%{[service.name]}-frontend"
+    - index: "apm-frontend"
       when.contains:
         agent.name: "rum-js"
+  
+#  - index: "apm-%{[service.environment]}-transaction-%{+yyyy.MM.dd}"
+   #   when.contains:
+    #    processor.event: "transaction"
+  
+  #  - index: "apm-%{[service.environment]}-span-%{+yyyy.MM.dd}"
+   #   when.contains:
+    #    processor.event: "span"
+  
+  #  - index: "apm-%{[service.environment]}-metric-%{+yyyy.MM.dd}"
+   #   when.contains:
+    #    processor.event: "metric"
+  
+  #  - index: "apm-%{[service.environment]}-onboarding-%{+yyyy.MM.dd}"
+   #   when.contains:
+    #    processor.event: "onboarding"
 
   # A pipeline is a definition of processors applied to documents when ingesting them to Elasticsearch.
   # APM Server comes with a default pipeline definition, located at `ingest/pipeline/definition.json`, which is
@@ -685,7 +707,7 @@ output.elasticsearch:
 
   # The maximum number of events to bulk in a single Elasticsearch bulk API index request.
   # The default is 50.
-  bulk_max_size: 500
+  bulk_max_size: 5000
 
   # The number of seconds to wait before trying to reconnect to Elasticsearch
   # after a network error. After waiting backoff.init seconds, apm-server
@@ -1218,7 +1240,7 @@ output.elasticsearch:
 # reporting is disabled by default.
 
 # Set to true to enable the monitoring reporter.
-monitoring.enabled: true
+#monitoring.enabled: false
 
 # Most settings from the Elasticsearch output are accepted here as well.
 # Note that these settings should be configured to point to your Elasticsearch *monitoring* cluster.
@@ -1232,7 +1254,7 @@ monitoring.elasticsearch:
 
   # Authentication credentials - either API key or username/password.
   #api_key: "id:api_key"
-  username: "apmserver"
+  username: "elastic"
   password: "3zizO7ykFlL4Fsj"
 
   # Array of hosts to connect to.
@@ -1351,3 +1373,4 @@ monitoring.elasticsearch:
 
   #metrics.period: 10s
   #state.period: 1m
+

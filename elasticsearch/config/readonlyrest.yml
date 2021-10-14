@@ -26,7 +26,7 @@ readonlyrest:
     - name: "::IGESP-TESTE::"
       auth_key: igesp:2jOe95zv2m
       kibana_access: ro
-      indices: [ ".kibana", "logstash-igesp*", "apm-7.14.0-igesp*", "observability*"]
+      indices: [ ".kibana", "*igesp*", "observability*"]
 
     - name: "::FAZENDARIO::"
       auth_key: fazendario:93tulgD32h
@@ -46,7 +46,7 @@ readonlyrest:
         name: "ldap1"
         groups: ["GG_ELK_IGESP"]
       kibana_access: ro
-      indices: [ ".kibana", "logstash-igesp*", "apm-7.14.0-igesp*", "observability*"]
+      indices: [ ".kibana", "*igesp*", "observability*"]
 
 
 #Configuração de autenticação LDAP, retornando os grupos em que o usuário pertence.

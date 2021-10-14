@@ -11,5 +11,5 @@ xpack.monitoring.enabled: true
 xpack.security.enabled: false
 xpack.watcher.enabled: false
 xpack.telemetry.enabled: false
-
+xpack.encryptedSavedObjects.encryptionKey: "4FgSs8JXxqUQQywIxSkTjgHQYeWBUSiW"
 
