@@ -45,7 +45,7 @@ services:
       - "5044:5044"
       - "9600:9600"
     environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      LS_JAVA_OPTS: "-Xmx1g -Xms1g"
     networks:
       - elk
     depends_on:
@@ -73,11 +73,11 @@ services:
       context: apm-server/
       args:
         ELK_VERSION: ${ELK_VERSION}
-    volumes:
-      - type: bind
-        source: ./apm-server/config/apm-server.yml
-        target: /usr/share/apm-server/apm-server.yml
-        read_only: true
+    # volumes:
+    #   - type: bind
+    #     source: ./apm-server/config/apm-server.yml
+    #     target: /usr/share/apm-server/apm-server.yml
+    #     read_only: true
     ports:
       - "8200:8200"
     networks:

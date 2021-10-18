@@ -549,7 +549,7 @@ queue:
 # These settings can be adjusted to load your own template or overwrite existing ones.
 
 # Set to false to disable template loading.
-setup.template.enabled: true
+setup.template.enabled: false
 
 # Template name. By default the template name is "apm-%{[]}"
 # The template name and pattern has to be set in case the elasticsearch index pattern is modified.
@@ -558,7 +558,7 @@ setup.template.name: "apm"
 # Template pattern. By default the template pattern is "apm-%{[observer.version]}-*" to apply to the default index settings.
 # The first part is the version of apm-server and then -* is used to match all daily indices.
 # The template name and pattern has to be set in case the elasticsearch index pattern is modified.
-setup.template.pattern: "apm-*"
+# setup.template.pattern: "apm-*"
 
 # Path to fields.yml file to generate the template.
 #setup.template.fields: "${path.config}/fields.yml"
@@ -646,27 +646,35 @@ output.elasticsearch:
   indices:
     - index: "apm-%{[service.name]}-igesp-production"
       when.contains:
-        service.name: "jboss-prod"
+        service.name: "jboss-pre-"
+
+    - index: "apm-%{[service.name]}-igesp-production"
+      when.contains:
+        service.name: "jboss-jobs-"
+
+    - index: "apm-%{[service.name]}-igesp-production"
+      when.contains:
+        service.name: "jboss-prod-"
 
     - index: "apm-%{[service.name]}-igesp-treinamento"
       when.contains:
-        service.environment: "treinamento"
+        service.name: "jboss-tre-"
  
     - index: "apm-%{[service.name]}-igesp-desenvolvimento"
       when.contains:
-        service.name: "jboss-des-01"
+        service.name: "jboss-des"
 
     - index: "apm-%{[service.name]}-igesp-hml"
       when.contains:
-        service.name: "jboss-hml-01"
+        service.name: "jboss-hml"
 
     - index: "apm-%{[service.name]}-igesp-pre-producao"
       when.contains:
         service.environment: "pre-producao"
         
-    - index: "apm-frontend"
+    - index: "apm-%{[service.environment]}"
       when.contains:
-        agent.name: "rum-js"
+        service.environment: "front-"
   
 #  - index: "apm-%{[service.environment]}-transaction-%{+yyyy.MM.dd}"
    #   when.contains:

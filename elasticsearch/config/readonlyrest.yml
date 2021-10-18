@@ -2,7 +2,6 @@ readonlyrest:
     audit_collector: true
     audit_index_template: "'auditoria'-yyy-MM"
     access_control_rules:
-
     - name: "::LOGSTASH::"
       auth_key: logstash:3ArwvkriDwUrOEm
       verbosity: error
@@ -15,7 +14,7 @@ readonlyrest:
       auth_key: kibana:4eBBYeN37C9sgFD
 
     - name: "::ADMIN::"
-      auth_key: elastic:3s6uCgWbGD
+      auth_key: elastic:teste
       kibana_access: unrestricted
       verbosity: error
 
@@ -23,30 +22,36 @@ readonlyrest:
       auth_key: filebeat:6ZhFaMkQ5W3xTlz
       verbosity: error
 
-    - name: "::IGESP-TESTE::"
+    - name: "::IGESP::"
       auth_key: igesp:2jOe95zv2m
       kibana_access: ro
       indices: [ ".kibana", "*igesp*", "observability*"]
 
-    - name: "::FAZENDARIO::"
-      auth_key: fazendario:93tulgD32h
+    - name: "::FRONTEND::"
+      auth_key: frontend:93tulgD32h
       kibana_access: ro
       verbosity: info
+      indices: [ ".kibana", "*front*", "observability*"]
 
-    - name: "ldapA"
-      type: allow
+    - name: "::LDAP_ADMIN::"
       ldap_auth:
         name: "ldap1"
         groups: ["GG_ApoioTecnologico"]
       kibana_access: unrestricted
 
     - name: "::LDAP_IGESP::"
-      type: allow
       ldap_auth:
         name: "ldap1"
         groups: ["GG_ELK_IGESP"]
       kibana_access: ro
       indices: [ ".kibana", "*igesp*", "observability*"]
+
+    - name: "::LDAP_FRONTEND::"
+      ldap_auth:
+        name: "ldap1"
+        groups: ["GG_ELK_FRONTEND"]
+      kibana_access: ro
+      indices: [ ".kibana", "*front*", "observability*"]
 
 
 #Configuração de autenticação LDAP, retornando os grupos em que o usuário pertence.
